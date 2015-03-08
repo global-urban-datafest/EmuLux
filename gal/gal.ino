@@ -8,10 +8,23 @@ int ii=0;
 char ssid[] = "Hackathon";          //  your network SSID (name) 
 int lightval = 0;
 static int led0 = 0;
+static int led1 = 0;
+static int led2 = 0;
+static int led3 = 0;
+static int led4 = 0;
+static int led5 = 0;
+static int led6 = 0;
 static int led7 = 0;
+static int led8 = 0;
+static int led9 = 0;
+static int led10= 0;
+static int led11 = 0;
+static int led12 = 0;
+static int led13 = 0;
+
 
 int led0P = 7;
-int led7P = 0;
+int led9P = 0;
 
 char c[500];
 const char b = '1';
@@ -23,8 +36,22 @@ WiFiClient client;
 
 void setup() {
   pinMode(lightSensor, INPUT);
-  pinMode(led0P, OUTPUT);
-  pinMode(led7P, OUTPUT);
+  pinMode(0, OUTPUT);
+  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  
+  pinMode(led9P, OUTPUT);
   Serial.begin(115200);
   Serial.println("Attempting to connect to network...");
   Serial.print("SSID: ");
@@ -61,49 +88,52 @@ void loop() {
     client.stop();
     Serial.println("Posting");
   }
+  for(int xx = 0; xx <=13;xx++){
+    if (client.connect(server, 80)) {
+      Serial.print(xx);
+      snprintf(buffer2,sizeof(buffer),"GET /leds?key=led%d&on=%d HTTP/1.0",xx,led9);
+      client.println(buffer2);
+      client.println("Host: streetlights.eu-gb.mybluemix.net");
+      client.println();
+      ii=0;
 
-  if (client.connect(server, 80)) {
-    snprintf(buffer2,sizeof(buffer),"GET /leds?key=%s&on=%d HTTP/1.0","led7",led7);
-    client.println(buffer2);
-    client.println("Host: streetlights.eu-gb.mybluemix.net");
-    client.println();
-    ii=0;
-
-    while (client.available()) {
-      d = client.read();
-      c[ii] = d;
-      ii++;
+      while (client.available()) {
+        d = client.read();
+        c[ii] = d;
+        ii++;
+      }
+      client.stop();
     }
-    client.stop();
-    FILE *fp;
-    fp = fopen("/home/root/hack/data.txt", "w");
-    fputs(c,fp);
-    fclose(fp);
-    //    serialFind(ii,c);
-    txtIn();
+      FILE *fp;
+      fp = fopen("/home/root/hack/data.txt", "w");
+      fputs(c,fp);
+      fclose(fp);
   }
+  txtIn();
   sensorRead();
-//  ledSwitch();
+  //  ledSwitch();
   delay(100);
 }
 void txtIn(){
-  FILE *fp;
-  char str[5];
+
+  char str[8];
   int inputnumber;
   char filename[50] = "/home/root/hack/led";
   Serial.println("d"); 
-  for(int xx = 0; xx <=13;xx++){
+  for(int xx = 0; xx <=10;xx++){
     snprintf(filename,sizeof(filename),"/home/root/hack/led%d",xx);
-   fp = fopen(filename , "r");
+      FILE *fp;
+    fp = fopen(filename , "r");
 
-   fscanf(fp,"%d",&inputnumber);
-   fclose(fp);
-   Serial.println(inputnumber);
-   digitalWrite(xx,inputnumber);
-   analogWrite(xx,inputnumber);
+    fscanf(fp,"%d",&inputnumber);
+    fclose(fp);
+    Serial.println(inputnumber);
+    Serial.println(xx);
+    digitalWrite(xx,inputnumber);
+    analogWrite(xx,inputnumber);
 
   }
-  
+
 }
 
 void serialFind(int j, char *input){
@@ -141,7 +171,7 @@ void serialFind(int j, char *input){
     led0 = val;
     break;
   case 7:
-    led7 = val;
+    led9 = val;
     break;
   }
 
@@ -154,11 +184,11 @@ void ledSwitch(){
   else if(led0==0){
     digitalWrite(0, led0);
   }
-  if(led7 ==1){
-    digitalWrite(7, led7);
+  if(led9 ==1){
+    digitalWrite(7, led9);
   }
-  else if(led7==0){
-    digitalWrite(7, led7);
+  else if(led9==0){
+    digitalWrite(7, led9);
   }
   return;
 }
